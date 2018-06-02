@@ -2,7 +2,7 @@ var origBoard; //an array of my board
 const huPlayer = 'O'; //the simble for human selections
 const aiPlayer = 'X'; //the simble for the AI selection
 // for now an Array hold all the winning combos, but this will disapear later
-const winComb = [
+const winCombos = [
     [0,1,2],
     [3,4,5],
     [6,7,8],
@@ -41,12 +41,25 @@ function turn(squareId, player){
 
 }
 
-function checkWin(board,player){
-    let plays = board.reduce((a,e,i) =>
-    (e===player)) ? a.concat(i) : a,[];
-    gameWon = null;
-    //for (let [index,win] of iWinCombos.entries()){
-    //    if(win.every())
-    //}
+function checkWin(board, player) {
+	let plays = board.reduce((a, e, i) => 
+		(e === player) ? a.concat(i) : a, []);
+	let gameWon = null;
+	for (let [index, win] of winCombos.entries()) {
+		if (win.every(elem => plays.indexOf(elem) > -1)) {
+			gameWon = {index: index, player: player};
+			break;
+		}
+	}
+	return gameWon;
+}
 
+function gameOver(gameWon){
+    for (let index of winCombos[gameWon.index]){
+        document.getElementById(index).style.backgroundColor =
+        gameWon.player ==huPlayer ? "blue" : "red";
+    }
+    for (var i = 0 ; i< cells.lenght; i++){
+        cells[i].removeEventListener('click',turnClick,flase);
+    }
 }
