@@ -3,14 +3,14 @@ const huPlayer = 'O'; //the simble for human selections
 const aiPlayer = 'X'; //the simble for the AI selection
 // for now an Array hold all the winning combos, but this will disapear later
 const winCombos = [
-    [0,1,2],
-    [3,4,5],
-    [6,7,8],
-    [0,3,6],
-    [1,4,7],
-    [2,5,8],
-    [0,4,8]
-    [6,4,2]
+	[0, 1, 2],
+	[3, 4, 5],
+	[6, 7, 8],
+	[0, 3, 6],
+	[1, 4, 7],
+	[2, 5, 8],
+	[0, 4, 8],
+	[6, 4, 2]
 ]
 
 const cells = document.querySelectorAll('.cell'); // makes an array of all the classes with 'cell' as the name
@@ -19,26 +19,28 @@ const cells = document.querySelectorAll('.cell'); // makes an array of all the c
 startGame();
 
 //---------------FUNCTIONS---------------------------------//
-function startGame(){
-    document.querySelector(".endgame").style.display= "none";
-    origBoard = Array.from(Array(9).keys());
-    for(var i = 0;i < cells.length ; i++){
-        cells[i].innerText = '';
-        cells[i].style.removeProperty('background-color');
-        cells[i].addEventListener('click', turnClick,false);
-    }
+function startGame() {
+	document.querySelector(".endgame").style.display = "none";
+	origBoard = Array.from(Array(9).keys());
+	for (var i = 0; i < cells.length; i++) {
+		cells[i].innerText = '';
+		cells[i].style.removeProperty('background-color');
+		cells[i].addEventListener('click', turnClick, false);
+	}
 }
 
-function turnClick(square){
-    turn(square.target.id, huPlayer);
+function turnClick(square) {
+	if (typeof origBoard[square.target.id] == 'number') {
+		turn(square.target.id, huPlayer)
+		if (!checkWin(origBoard, huPlayer) && !checkTie()) turn(bestSpot(), aiPlayer);
+	}
 }
 
-function turn(squareId, player){
-    origBoard[squareId] = player;
-    document.getElementById(squareId).innerText= player;
-    let gameWon = checkWin(origBoard, player);
-    if (gameWon) gameOver(gameWon);
-
+function turn(squareId, player) {
+	origBoard[squareId] = player;
+	document.getElementById(squareId).innerText = player;
+	let gameWon = checkWin(origBoard, player)
+	if (gameWon) gameOver(gameWon)
 }
 
 function checkWin(board, player) {
@@ -54,12 +56,56 @@ function checkWin(board, player) {
 	return gameWon;
 }
 
-function gameOver(gameWon){
-    for (let index of winCombos[gameWon.index]){
-        document.getElementById(index).style.backgroundColor =
-        gameWon.player ==huPlayer ? "blue" : "red";
+function gameOver(gameWon) {
+	for (let index of winCombos[gameWon.index]) {
+		document.getElementById(index).style.backgroundColor =
+			gameWon.player == huPlayer ? "blue" : "red";
+	}
+	for (var i = 0; i < cells.length; i++) {
+		cells[i].removeEventListener('click', turnClick, false);
+	}
+	declareWinner(gameWon.player == huPlayer ? "You win!" : "You lose.");
+}
+
+function declareWinner(who) {
+	document.querySelector(".endgame").style.display = "block";
+	document.querySelector(".endgame .text").innerText = who;
+}
+
+function emptySquares() {
+	return origBoard.filter(s => typeof s == 'number');
+}
+
+function bestSpot() {
+	return minimax(origBoard, aiPlayer).index;//This function returns an object
+}
+
+function checkTie() {
+	if (emptySquares().length == 0) {
+		for (var i = 0; i < cells.length; i++) {
+			cells[i].style.backgroundColor = "green";
+			cells[i].removeEventListener('click', turnClick, false);
+		}
+		declareWinner("Tie Game!")
+		return true;
+	}
+	return false;
+}
+
+// Here is where the A.I Comes alive//
+function minimax(newBoard, player){
+    var availSpots = emptySquares(newBoard);
+
+    if (checkWin(newBoard, player)){
+        return{score: -10};
+    }else if (availSpots.length === 0){
+        return {score: 20};
+    }else if (availSpots.length === 0) {
+        return {scre: 0};
     }
-    for (var i = 0 ; i< cells.lenght; i++){
-        cells[i].removeEventListener('click',turnClick,flase);
+    var moves = [];
+    for (var i =0 ; i< availSposts.length; i++){
+        var move  = {};
+        move.index =
     }
 }
