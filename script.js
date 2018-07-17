@@ -93,19 +93,54 @@ function checkTie() {
 }
 
 // Here is where the A.I Comes alive//
-function minimax(newBoard, player){
-    var availSpots = emptySquares(newBoard);
+function minimax(newBoard, player){ 
+    var availSpots = emptySquares();
 
-    if (checkWin(newBoard, player)){
+    if (checkWin(newBoard, huPlayer)){
         return{score: -10};
-    }else if (availSpots.length === 0){
-        return {score: 20};
+    }else if (checkWin(newBoard,aiPlayer)){
+        return {score: 10};
     }else if (availSpots.length === 0) {
-        return {scre: 0};
+        return {score: 0};
     }
     var moves = [];
-    for (var i =0 ; i< availSposts.length; i++){
+	for (var i = 0; i < availSpots.length; i++) {
         var move  = {};
-        move.index =
-    }
+		move.index = newBoard[availSpots[i]];
+		newBoard[availSpots[i]] = player;
+
+		if(player == aiPlayer){
+			var result = minimax(newBoard,huPlayer);//go deeper
+			move.score = result.score;			   
+		}else{
+			var result = minimax(newBoard,aiPlayer);//go deeper
+			move.score = result.score;			
+		}
+
+		newBoard[availSpots[i]] = move.index;//reset board
+		
+		moves.push(move);	
+
+	}
+
+	var bestMove;
+	if(player === aiPlayer){
+		var bestScore = -10000;
+		for (var i = 0 ; i < moves.length ; i++ ){
+			if (moves[i].score > bestScore){
+				bestScore = moves[i].score;
+				bestMove = i;
+			}
+		}
+
+	}else {
+		var bestScore = 10000;
+		for (var i = 0 ; i < moves.length ; i++ ){
+			if (moves[i].score < bestScore){
+				bestScore = moves[i].score;
+				bestMove = i;
+			}
+		}
+	}
+	return moves[bestMove];	
 }
